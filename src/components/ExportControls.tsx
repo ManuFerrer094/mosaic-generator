@@ -98,14 +98,15 @@ export default function ExportControls({ mosaicData }: ExportControlsProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               onClick={button.onClick}
               disabled={isLoading}
               className={`
-                relative p-4 rounded-xl bg-gradient-to-r ${button.color}
-                text-white shadow-lg hover:shadow-xl transform transition-all duration-200
-                disabled:opacity-50 disabled:cursor-not-allowed
+                relative p-6 rounded-2xl bg-gradient-to-r ${button.color}
+                text-white shadow-xl hover:shadow-2xl transform transition-all duration-300
+                disabled:opacity-50 disabled:cursor-not-allowed group overflow-hidden
+                hover:-translate-y-1
               `}
             >
               <div className="flex flex-col items-center text-center">

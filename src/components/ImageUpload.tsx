@@ -80,20 +80,35 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
           />
           
           <motion.button
-            whileHover={!disabled ? { scale: 1.05 } : {}}
+            whileHover={!disabled ? { scale: 1.05, y: -2 } : {}}
             whileTap={!disabled ? { scale: 0.95 } : {}}
             className={`
-              inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg
-              transition-all duration-200 shadow-lg border-2
+              inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg
+              transition-all duration-300 shadow-xl border-2 relative overflow-hidden
               ${!disabled 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 hover:shadow-xl'
+                ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white border-transparent hover:shadow-2xl transform hover:-translate-y-1'
                 : 'bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed'
               }
             `}
             disabled={disabled}
           >
-            <Upload className="w-6 h-6" />
-            Choose Image
+            {/* Animated background effect */}
+            {!disabled && (
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover:opacity-100"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
+            
+            <motion.div
+              className="relative z-10 flex items-center gap-3"
+              whileHover={!disabled ? { scale: 1.05 } : {}}
+            >
+              <Upload className="w-6 h-6" />
+              Choose Image
+            </motion.div>
           </motion.button>
         </motion.div>
         
