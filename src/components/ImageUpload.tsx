@@ -38,23 +38,37 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
     >
       <div
         className={`
-          relative border-2 border-dashed border-purple-300 rounded-2xl p-12 
-          text-center transition-all duration-300 glass-card
-          ${!disabled ? 'hover:border-purple-400 hover:bg-purple-50/50 cursor-pointer' : 'opacity-50'}
+          relative border-2 border-dashed rounded-2xl p-8 text-center 
+          transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg
+          ${!disabled 
+            ? 'border-blue-300 hover:border-blue-400 hover:bg-white/90 cursor-pointer hover:shadow-xl' 
+            : 'border-gray-300 opacity-60'
+          }
         `}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
         <motion.div
-          whileHover={!disabled ? { scale: 1.05 } : {}}
+          whileHover={!disabled ? { scale: 1.02 } : {}}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <ImageIcon className="mx-auto h-16 w-16 text-purple-400 mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className={`
+              mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-6
+              ${!disabled ? 'bg-blue-100' : 'bg-gray-100'}
+            `}
+          >
+            <ImageIcon className={`h-10 w-10 ${!disabled ? 'text-blue-500' : 'text-gray-400'}`} />
+          </motion.div>
+          
+          <h3 className={`text-2xl font-bold mb-3 ${!disabled ? 'text-gray-800' : 'text-gray-500'}`}>
             Upload Your Image
           </h3>
-          <p className="text-gray-500 mb-6">
-            Drag and drop an image here, or click to select
+          <p className={`text-base mb-8 ${!disabled ? 'text-gray-600' : 'text-gray-400'}`}>
+            Drag and drop an image here, or click the button below
           </p>
           
           <input
@@ -69,21 +83,21 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
             whileHover={!disabled ? { scale: 1.05 } : {}}
             whileTap={!disabled ? { scale: 0.95 } : {}}
             className={`
-              inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium
-              transition-all duration-200
+              inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg
+              transition-all duration-200 shadow-lg border-2
               ${!disabled 
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 hover:shadow-xl'
+                : 'bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed'
               }
             `}
             disabled={disabled}
           >
-            <Upload className="w-5 h-5" />
+            <Upload className="w-6 h-6" />
             Choose Image
           </motion.button>
         </motion.div>
         
-        <div className="mt-6 text-sm text-gray-400">
+        <div className={`mt-8 text-sm ${!disabled ? 'text-gray-500' : 'text-gray-400'}`}>
           Supported formats: JPG, PNG, GIF, WebP
         </div>
       </div>
