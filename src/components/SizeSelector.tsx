@@ -30,15 +30,15 @@ export default function SizeSelector({ selectedSize, onSizeChange, disabled }: S
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              whileHover={!disabled ? { scale: 1.05 } : {}}
+              whileHover={!disabled ? { scale: 1.05, y: -2 } : {}}
               whileTap={!disabled ? { scale: 0.95 } : {}}
               onClick={() => !disabled && onSizeChange(size.value)}
               disabled={disabled}
               className={`
-                relative p-4 rounded-xl border-2 transition-all duration-300
+                relative p-6 rounded-2xl border-3 transition-all duration-300 group overflow-hidden
                 ${selectedSize === size.value
-                  ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg'
-                  : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                  ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-pink-100 shadow-xl transform scale-105'
+                  : 'border-gray-200 bg-white hover:border-purple-400 hover:shadow-lg hover:-translate-y-1'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
               `}
