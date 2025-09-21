@@ -21,7 +21,6 @@ export default function MosaicPreview({ mosaicData, className = '', onPixelEdit 
   // Estado para el selector de colores
   const [selectedPixel, setSelectedPixel] = useState<{x: number, y: number} | null>(null)
   const [showColorPicker, setShowColorPicker] = useState(false)
-  const [hoveredColor, setHoveredColor] = useState<LegoColor | null>(null)
 
   // Debug: verificar los datos del mosaico
   useEffect(() => {
@@ -123,7 +122,7 @@ export default function MosaicPreview({ mosaicData, className = '', onPixelEdit 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl border border-gray-100" 
+              className="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 shadow-2xl border border-gray-100" 
               onClick={(e) => e.stopPropagation()}
             >
               <h4 className="text-2xl font-bold mb-2 text-center text-gray-800">
@@ -133,50 +132,50 @@ export default function MosaicPreview({ mosaicData, className = '', onPixelEdit 
                 Position ({selectedPixel?.x}, {selectedPixel?.y})
               </p>
               
-              {/* Tooltip display area */}
-              <div className="h-8 mb-4 flex items-center justify-center">
-                <AnimatePresence>
-                  {hoveredColor && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
-                    >
-                      {hoveredColor.name}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              
-              <div className="grid grid-cols-4 gap-4 mb-8">
+              {/* Color grid with improved layout */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8 max-h-96 overflow-y-auto">
                 {LEGO_COLORS.map((color) => (
                   <motion.button
                     key={color.id}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => handleColorSelect(color)}
-                    onMouseEnter={() => setHoveredColor(color)}
-                    onMouseLeave={() => setHoveredColor(null)}
-                    className="w-16 h-16 rounded-xl border-4 border-gray-200 hover:border-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl relative overflow-hidden group"
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
+                    className="flex flex-col items-center p-3 rounded-xl border-2 border-gray-200 hover:border-blue-500 transition-all duration-200 shadow-md hover:shadow-lg bg-gray-50 hover:bg-white group"
                   >
-                    {/* Inner stud effect */}
-                    <div className="absolute inset-2 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors duration-200" />
+                    {/* Color swatch - much larger */}
+                    <div 
+                      className="w-20 h-20 md:w-24 md:h-24 rounded-lg shadow-md mb-3 relative overflow-hidden group-hover:shadow-lg transition-shadow duration-200"
+                      style={{ backgroundColor: color.hex }}
+                    >
+                      {/* Inner stud effect */}
+                      <div className="absolute inset-3 rounded-full bg-white/25 group-hover:bg-white/35 transition-colors duration-200" />
+                      
+                      {/* Selection indicator */}
+                      <motion.div
+                        className="absolute inset-0 border-3 border-blue-500 rounded-lg opacity-0 group-hover:opacity-100"
+                        transition={{ duration: 0.2 }}
+                      />
+                    </div>
                     
-                    {/* Selection indicator */}
-                    <motion.div
-                      className="absolute inset-0 border-4 border-blue-500 rounded-xl opacity-0 group-hover:opacity-100"
-                      transition={{ duration: 0.2 }}
-                    />
+                    {/* Color information */}
+                    <div className="text-center">
+                      <div className="font-semibold text-sm text-gray-800 mb-1 leading-tight">
+                        {color.name}
+                      </div>
+                      <div className="text-xs text-gray-500 font-mono">
+                        {color.hex}
+                      </div>
+                    </div>
                   </motion.button>
                 ))}
               </div>
               
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-500">
-                  Click a color to select
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600 text-center sm:text-left">
+                  <div className="font-medium">Click any color to select it</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {LEGO_COLORS.length} authentic LEGO colors available
+                  </div>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
