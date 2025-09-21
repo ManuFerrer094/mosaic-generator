@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { Upload, Image as ImageIcon } from 'lucide-react'
+import { Upload, Image as ImageIcon, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface ImageUploadProps {
@@ -31,44 +31,47 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full"
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="w-full max-w-2xl mx-auto"
     >
       <div
-        className={`
-          relative border-2 border-dashed rounded-2xl p-8 text-center 
-          transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg
-          ${!disabled 
-            ? 'border-blue-300 hover:border-blue-400 hover:bg-white/90 cursor-pointer hover:shadow-xl' 
-            : 'border-gray-300 opacity-60'
-          }
-        `}
+        className={`upload-zone ${!disabled ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
         <motion.div
           whileHover={!disabled ? { scale: 1.02 } : {}}
           transition={{ type: "spring", stiffness: 300 }}
+          className="relative"
         >
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className={`
-              mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-6
-              ${!disabled ? 'bg-blue-100' : 'bg-gray-100'}
+              mx-auto w-24 h-24 rounded-2xl flex items-center justify-center mb-8 relative
+              ${!disabled ? 'bg-gradient-to-br from-primary-100 to-secondary-100' : 'bg-gray-100'}
             `}
           >
-            <ImageIcon className={`h-10 w-10 ${!disabled ? 'text-blue-500' : 'text-gray-400'}`} />
+            <ImageIcon className={`h-12 w-12 ${!disabled ? 'text-primary-600' : 'text-gray-400'}`} />
+            {!disabled && (
+              <motion.div
+                className="absolute -top-2 -right-2"
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Sparkles className="w-6 h-6 text-amber-400" />
+              </motion.div>
+            )}
           </motion.div>
           
-          <h3 className={`text-2xl font-bold mb-3 ${!disabled ? 'text-gray-800' : 'text-gray-500'}`}>
+          <h3 className={`text-3xl font-bold mb-4 ${!disabled ? 'text-gray-800' : 'text-gray-500'}`}>
             Upload Your Image
           </h3>
-          <p className={`text-base mb-8 ${!disabled ? 'text-gray-600' : 'text-gray-400'}`}>
-            Drag and drop an image here, or click the button below
+          <p className={`text-lg mb-10 ${!disabled ? 'text-gray-600' : 'text-gray-400'} max-w-md mx-auto leading-relaxed`}>
+            Drag and drop an image here, or click the button below to start creating your LEGO mosaic
           </p>
           
           <input
@@ -80,15 +83,11 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
           />
           
           <motion.button
-            whileHover={!disabled ? { scale: 1.05 } : {}}
-            whileTap={!disabled ? { scale: 0.95 } : {}}
+            whileHover={!disabled ? { scale: 1.05, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" } : {}}
+            whileTap={!disabled ? { scale: 0.98 } : {}}
             className={`
-              inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg
-              transition-all duration-200 shadow-lg border-2
-              ${!disabled 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 hover:shadow-xl'
-                : 'bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed'
-              }
+              ${!disabled ? 'modern-button' : 'modern-button-secondary opacity-50 cursor-not-allowed'}
+              inline-flex items-center gap-3
             `}
             disabled={disabled}
           >
@@ -97,9 +96,22 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
           </motion.button>
         </motion.div>
         
-        <div className={`mt-8 text-sm ${!disabled ? 'text-gray-500' : 'text-gray-400'}`}>
-          Supported formats: JPG, PNG, GIF, WebP
-        </div>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className={`mt-10 text-sm ${!disabled ? 'text-gray-500' : 'text-gray-400'}`}
+        >
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-green-400"></div>
+              <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+              <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+            </div>
+            <span>Supported formats</span>
+          </div>
+          <p>JPG, PNG, GIF, WebP • For best results, use high-resolution images (≥800px)</p>
+        </motion.div>
       </div>
     </motion.div>
   )

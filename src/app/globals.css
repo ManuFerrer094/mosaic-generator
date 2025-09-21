@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,39 +10,70 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen;
+    @apply bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen font-sans;
   }
 }
 
 @layer components {
   .stud {
-    position: relative;
+    @apply relative;
   }
   
   .stud::before {
     content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    @apply w-[70%] h-[70%] rounded-full;
+    background: rgba(255, 255, 255, 0.4);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    @apply pointer-events-none;
   }
   
   .lego-stud {
-    @apply aspect-square rounded-sm shadow-lg transition-all duration-200 hover:scale-105;
-    background: linear-gradient(135deg, currentColor 0%, currentColor 70%, rgba(0,0,0,0.2) 100%);
+    @apply aspect-square rounded-sm shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl;
+    background: linear-gradient(135deg, currentColor 0%, currentColor 70%, rgba(0,0,0,0.15) 100%);
   }
   
   .glass-card {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl;
+    @apply bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-2xl;
+    background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%);
   }
   
-  .gradient-button {
-    @apply bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl;
+  .modern-button {
+    @apply bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600;
+    @apply text-white font-semibold py-4 px-8 rounded-2xl shadow-lg;
+    @apply transform transition-all duration-300 hover:scale-105 hover:shadow-xl;
+    @apply border border-white/20 backdrop-blur-sm;
+  }
+
+  .modern-button-secondary {
+    @apply bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900;
+    @apply font-semibold py-4 px-8 rounded-2xl shadow-lg;
+    @apply transform transition-all duration-300 hover:scale-105 hover:shadow-xl;
+    @apply border border-gray-200/50 backdrop-blur-sm;
+  }
+
+  .upload-zone {
+    @apply relative border-2 border-dashed border-primary-300/50 hover:border-primary-400/70;
+    @apply rounded-3xl p-8 text-center transition-all duration-300;
+    @apply bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm shadow-xl;
+    @apply hover:shadow-2xl hover:scale-[1.02];
+  }
+
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 p-6;
+    @apply transform transition-all duration-300 scale-100;
+  }
+
+  .floating-elements {
+    @apply absolute inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .floating-element {
+    @apply absolute rounded-lg opacity-20 animate-float;
   }
 }
 
@@ -48,4 +81,27 @@
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 via-secondary-500 to-primary-500 bg-clip-text text-transparent;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s ease-in-out infinite;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(-5px) rotate(-1deg); }
 }
