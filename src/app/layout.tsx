@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import './globals.css'
+import '../styles.css'
 
 export const metadata: Metadata = {
   title: 'Mosaic Maker - LEGO Mosaic Generator',
@@ -20,10 +20,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans">
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-          {children}
-        </div>
+      <body>
+        {children}
       </body>
     </html>
   )

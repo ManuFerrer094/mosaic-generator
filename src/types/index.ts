@@ -30,7 +30,9 @@ export interface BaseRequirement {
 
 export interface MosaicData {
   pixels: MosaicPixel[];
-  size: number;
+  size: number; // Para compatibilidad con código existente
+  width?: number; // Ancho real del mosaico
+  height?: number; // Alto real del mosaico
   pieceCount: PieceCount[];
   baseRequirements: BaseRequirement[];
   totalPieces: number;

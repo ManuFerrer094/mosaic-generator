@@ -2,11 +2,46 @@ import { findClosestLegoColor } from '@/lib/lego-colors'
 import type { MosaicData, MosaicPixel, PieceCount, BaseRequirement } from '@/types'
 
 /**
- * Process an image and convert it to a LEGO mosaic
+ * Calculate optimal mosaic size based on image dimensions and complexity
+ */
+function calculateOptimalMosaicSize(width: number, height: number): { size: number, aspectRatio: number } {
+  // Determinar el tamaño base según la resolución
+  const maxDimension = Math.max(width, height)
+  const minDimension = Math.min(width, height)
+  
+  let baseSize: number
+  if (maxDimension > 800) {
+    baseSize = 64
+  } else if (maxDimension > 400) {
+    baseSize = 48
+  } else {
+    baseSize = 32
+  }
+  
+  // Calcular tamaños proporcionales
+  const aspectRatio = width / height
+  let mosaicWidth: number, mosaicHeight: number
+  
+  if (width >= height) {
+    mosaicWidth = baseSize
+    mosaicHeight = Math.round(baseSize / aspectRatio)
+  } else {
+    mosaicHeight = baseSize
+    mosaicWidth = Math.round(baseSize * aspectRatio)
+  }
+  
+  // Asegurar tamaños mínimos
+  mosaicWidth = Math.max(16, mosaicWidth)
+  mosaicHeight = Math.max(16, mosaicHeight)
+  
+  return { size: Math.max(mosaicWidth, mosaicHeight), aspectRatio }
+}
+
+/**
+ * Process an image and convert it to a LEGO mosaic with automatic sizing
  */
 export async function processImageToMosaic(
-  imageFile: File,
-  mosaicSize: number
+  imageFile: File
 ): Promise<MosaicData> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -19,28 +54,56 @@ export async function processImageToMosaic(
     }
 
     img.onload = () => {
+      // Calcular tamaño óptimo del mosaico manteniendo proporciones
+      const { size: mosaicSize } = calculateOptimalMosaicSize(img.width, img.height)
+      
+      // Mantener proporciones de la imagen original
+      const aspectRatio = img.width / img.height
+      let mosaicWidth: number, mosaicHeight: number
+      
+      if (aspectRatio >= 1) {
+        // Imagen horizontal o cuadrada
+        mosaicWidth = mosaicSize
+        mosaicHeight = Math.round(mosaicSize / aspectRatio)
+      } else {
+        // Imagen vertical
+        mosaicHeight = mosaicSize
+        mosaicWidth = Math.round(mosaicSize * aspectRatio)
+      }
+      
+      // Asegurar tamaños mínimos
+      mosaicWidth = Math.max(16, mosaicWidth)
+      mosaicHeight = Math.max(16, mosaicHeight)
+      
+      console.log(`Original image: ${img.width}x${img.height}, Mosaic: ${mosaicWidth}x${mosaicHeight}`)
+      
       // Set canvas size to mosaic dimensions
-      canvas.width = mosaicSize
-      canvas.height = mosaicSize
+      canvas.width = mosaicWidth
+      canvas.height = mosaicHeight
 
-      // Draw and scale the image to fit the mosaic size
-      ctx.drawImage(img, 0, 0, mosaicSize, mosaicSize)
+      // Draw and scale the image to fit the mosaic size maintaining aspect ratio
+      ctx.drawImage(img, 0, 0, mosaicWidth, mosaicHeight)
 
       // Get image data
-      const imageData = ctx.getImageData(0, 0, mosaicSize, mosaicSize)
+      const imageData = ctx.getImageData(0, 0, mosaicWidth, mosaicHeight)
       const pixels: MosaicPixel[] = []
       const colorCounts = new Map<string, number>()
 
       // Process each pixel
-      for (let y = 0; y < mosaicSize; y++) {
-        for (let x = 0; x < mosaicSize; x++) {
-          const index = (y * mosaicSize + x) * 4
+      for (let y = 0; y < mosaicHeight; y++) {
+        for (let x = 0; x < mosaicWidth; x++) {
+          const index = (y * mosaicWidth + x) * 4
           const r = imageData.data[index]
           const g = imageData.data[index + 1]
           const b = imageData.data[index + 2]
 
           // Find closest LEGO color
           const legoColor = findClosestLegoColor([r, g, b])
+          
+          // Debug: log some color conversions
+          if (x < 3 && y < 3) {
+            console.log(`Pixel (${x},${y}): RGB(${r},${g},${b}) -> ${legoColor.name} (${legoColor.hex})`)
+          }
           
           pixels.push({
             color: legoColor,
@@ -60,15 +123,19 @@ export async function processImageToMosaic(
         return { color, count }
       }).sort((a, b) => b.count - a.count)
 
-      // Calculate base requirements
-      const baseRequirements = calculateBaseRequirements(mosaicSize)
+      // Calculate base requirements using the larger dimension
+      const baseRequirements = calculateBaseRequirements(Math.max(mosaicWidth, mosaicHeight))
 
       // Calculate total pieces
       const totalPieces = pixels.length
 
+      console.log(`Generated mosaic: ${mosaicWidth}x${mosaicHeight} pixels, ${totalPieces} total pieces`)
+
       resolve({
         pixels,
-        size: mosaicSize,
+        size: Math.max(mosaicWidth, mosaicHeight), // Para compatibilidad con el grid cuadrado
+        width: mosaicWidth,
+        height: mosaicHeight,
         pieceCount,
         baseRequirements,
         totalPieces

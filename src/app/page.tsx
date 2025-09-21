@@ -4,60 +4,74 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Blocks, Sparkles, Zap } from 'lucide-react'
 import ImageUpload from '@/components/ImageUpload'
-import SizeSelector from '@/components/SizeSelector'
 import MosaicPreview from '@/components/MosaicPreview'
 import PieceList from '@/components/PieceList'
 import ExportControls from '@/components/ExportControls'
 import { processImageToMosaic, resizeImageFile } from '@/utils/image-processing'
-import type { MosaicData } from '@/types'
+import type { MosaicData, LegoColor } from '@/types'
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [selectedSize, setSelectedSize] = useState<number>(32)
   const [mosaicData, setMosaicData] = useState<MosaicData | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [step, setStep] = useState<'upload' | 'size' | 'processing' | 'result'>('upload')
+  const [step, setStep] = useState<'upload' | 'processing' | 'result'>('upload')
 
   const handleImageSelect = useCallback(async (file: File) => {
     try {
       // Resize image if it's too large
       const resizedFile = await resizeImageFile(file, 1024)
       setSelectedImage(resizedFile)
-      setStep('size')
-    } catch (error) {
-      console.error('Error processing image:', error)
-      alert('Error processing image. Please try a different image.')
-    }
-  }, [])
-
-  const handleSizeChange = useCallback((size: number) => {
-    setSelectedSize(size)
-  }, [])
-
-  const handleGenerateMosaic = useCallback(async () => {
-    if (!selectedImage) return
-
-    setIsProcessing(true)
-    setStep('processing')
-
-    try {
-      const data = await processImageToMosaic(selectedImage, selectedSize)
+      
+      // Procesar inmediatamente después de seleccionar la imagen
+      setIsProcessing(true)
+      setStep('processing')
+      
+      const data = await processImageToMosaic(resizedFile)
       setMosaicData(data)
       setStep('result')
     } catch (error) {
-      console.error('Error generating mosaic:', error)
-      alert('Error generating mosaic. Please try again.')
-      setStep('size')
+      console.error('Error processing image:', error)
+      alert('Error processing image. Please try a different image.')
+      setStep('upload')
     } finally {
       setIsProcessing(false)
     }
-  }, [selectedImage, selectedSize])
+  }, [])
 
   const handleStartOver = useCallback(() => {
     setSelectedImage(null)
     setMosaicData(null)
     setStep('upload')
   }, [])
+
+  const handlePixelEdit = useCallback((x: number, y: number, newColor: LegoColor) => {
+    if (!mosaicData) return
+    
+    const updatedPixels = mosaicData.pixels.map(pixel => {
+      if (pixel.x === x && pixel.y === y) {
+        return { ...pixel, color: newColor }
+      }
+      return pixel
+    })
+    
+    // Recalcular conteo de colores
+    const colorCounts = new Map<string, number>()
+    updatedPixels.forEach(pixel => {
+      const colorKey = pixel.color.hex
+      colorCounts.set(colorKey, (colorCounts.get(colorKey) || 0) + 1)
+    })
+    
+    const pieceCount = Array.from(colorCounts.entries()).map(([hex, count]) => {
+      const color = updatedPixels.find(p => p.color.hex === hex)!.color
+      return { color, count }
+    }).sort((a, b) => b.count - a.count)
+    
+    setMosaicData({
+      ...mosaicData,
+      pixels: updatedPixels,
+      pieceCount
+    })
+  }, [mosaicData])
 
   return (
     <div className="min-h-screen">
@@ -93,32 +107,13 @@ export default function Home() {
           </motion.div>
         </div>
         
-        {/* Floating LEGO studs background */}
+        {/* Static LEGO studs background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {Array.from({ length: 15 }).map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ 
-                x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : Math.random() * 1200,
-                y: typeof window !== 'undefined' ? window.innerHeight + 100 : 900,
-                rotate: 0,
-              }}
-              animate={{
-                y: -100,
-                rotate: 360,
-              }}
-              transition={{
-                duration: Math.random() * 10 + 10,
-                repeat: Infinity,
-                ease: "linear",
-                delay: Math.random() * 5,
-              }}
-              className="absolute w-6 h-6 rounded-sm opacity-20"
-              style={{
-                backgroundColor: ['#D4282A', '#0055B7', '#FFDE00', '#237841', '#FF6600'][i % 5],
-              }}
-            />
-          ))}
+          <div className="absolute top-10 left-10 w-6 h-6 rounded-sm opacity-20" style={{ backgroundColor: '#D4282A' }} />
+          <div className="absolute top-20 right-20 w-6 h-6 rounded-sm opacity-20" style={{ backgroundColor: '#0055B7' }} />
+          <div className="absolute top-32 left-1/3 w-6 h-6 rounded-sm opacity-20" style={{ backgroundColor: '#FFDE00' }} />
+          <div className="absolute top-40 right-1/3 w-6 h-6 rounded-sm opacity-20" style={{ backgroundColor: '#237841' }} />
+          <div className="absolute top-52 left-1/2 w-6 h-6 rounded-sm opacity-20" style={{ backgroundColor: '#FF6600' }} />
         </div>
       </header>
 
@@ -134,61 +129,6 @@ export default function Home() {
               className="max-w-2xl mx-auto"
             >
               <ImageUpload onImageSelect={handleImageSelect} />
-            </motion.div>
-          )}
-
-          {step === 'size' && (
-            <motion.div
-              key="size"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="max-w-4xl mx-auto space-y-6"
-            >
-              {/* Image preview */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-6 text-center"
-              >
-                <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                  Your Selected Image
-                </h3>
-                <img
-                  src={URL.createObjectURL(selectedImage!)}
-                  alt="Selected"
-                  className="max-w-sm max-h-64 mx-auto rounded-lg shadow-lg"
-                />
-              </motion.div>
-
-              <SizeSelector
-                selectedSize={selectedSize}
-                onSizeChange={handleSizeChange}
-              />
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-center"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleGenerateMosaic}
-                  className="gradient-button text-lg px-8 py-4"
-                >
-                  <Zap className="w-6 h-6 mr-2" />
-                  Generate LEGO Mosaic
-                </motion.button>
-                
-                <button
-                  onClick={handleStartOver}
-                  className="ml-4 px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  Choose Different Image
-                </button>
-              </motion.div>
             </motion.div>
           )}
 
@@ -249,11 +189,27 @@ export default function Home() {
                 </motion.button>
               </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <MosaicPreview mosaicData={mosaicData} />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Imagen original */}
+                <div className="space-y-4">
+                  <div className="glass-card p-4">
+                    <h3 className="text-xl mb-4 text-center">Original Image</h3>
+                    <img
+                      src={selectedImage ? URL.createObjectURL(selectedImage) : ''}
+                      alt="Original"
+                      className="w-full rounded-lg shadow-lg"
+                      style={{ maxHeight: '400px', objectFit: 'contain' }}
+                    />
+                  </div>
                   <ExportControls mosaicData={mosaicData} />
                 </div>
+                
+                {/* Mosaico LEGO */}
+                <div>
+                  <MosaicPreview mosaicData={mosaicData} onPixelEdit={handlePixelEdit} />
+                </div>
+                
+                {/* Lista de piezas */}
                 <div>
                   <PieceList mosaicData={mosaicData} />
                 </div>
@@ -264,11 +220,11 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white/30 backdrop-blur-sm border-t border-white/20">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-gray-600">
-            <p>Built with ❤️ using Next.js & Tailwind CSS</p>
-            <p className="text-sm mt-2">
+      <footer style={{ background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.5rem 1rem' }}>
+          <div className="text-center text-sm">
+            <p>Built with ❤️ using Next.js</p>
+            <p className="mt-2 text-xs">
               Transform your creativity into LEGO masterpieces
             </p>
           </div>
