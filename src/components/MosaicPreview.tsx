@@ -1,3 +1,4 @@
+
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
@@ -71,133 +72,79 @@ export default function MosaicPreview({ mosaicData, className = '', onPixelEdit 
   }
   
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      className={`glass-card ${className}`}
-      id="mosaic-preview"
-    >
-      <h3 className="text-xl mb-4 text-center">
-        LEGO Mosaic Preview
-      </h3>
+    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45 }}>
+      <div id="mosaic-preview" className={`card p-4 ${className}`}>
+        <h3 className="text-lg mb-3 text-center" style={{ color: 'var(--gray-100)' }}>LEGO Mosaic Preview</h3>
 
-      <div>
-        <div
-          className="mosaic-grid"
-          style={{
-            gridTemplateColumns: `repeat(${mosaicWidth}, 1fr)`,
-            gridTemplateRows: `repeat(${mosaicHeight}, 1fr)`,
-            width: 'fit-content',
-          }}
-        >
-          {pixels.map((pixel, index) => (
-            <motion.div
-              key={index}
-              initial={{ scale: 0, rotate: 180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{
-                delay: (pixel.x + pixel.y) * 0.002,
-                type: "spring",
-                stiffness: 300,
-                damping: 20
-              }}
-              className={`lego-stud stud ${onPixelEdit ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
-              style={{
-                width: `${studSize}px`,
-                height: `${studSize}px`,
-                backgroundColor: pixel.color.hex,
-              }}
-              title={`${pixel.color.name} (${pixel.x}, ${pixel.y})${onPixelEdit ? ' - Click to edit' : ''}`}
-              onClick={() => handlePixelClick(pixel.x, pixel.y)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Selector de colores */}
-      <AnimatePresence>
-        {showColorPicker && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleCloseColorPicker}>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl border border-gray-100" 
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h4 className="text-2xl font-bold mb-2 text-center text-gray-800">
-                Choose LEGO Color
-              </h4>
-              <p className="text-center text-gray-600 mb-6">
-                Position ({selectedPixel?.x}, {selectedPixel?.y})
-              </p>
-              
-              {/* Tooltip display area */}
-              <div className="h-8 mb-4 flex items-center justify-center">
-                <AnimatePresence>
-                  {hoveredColor && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
-                    >
-                      {hoveredColor.name}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              
-              <div className="grid grid-cols-4 gap-4 mb-8">
-                {LEGO_COLORS.map((color) => (
-                  <motion.button
-                    key={color.id}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleColorSelect(color)}
-                    onMouseEnter={() => setHoveredColor(color)}
-                    onMouseLeave={() => setHoveredColor(null)}
-                    className="w-16 h-16 rounded-xl border-4 border-gray-200 hover:border-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl relative overflow-hidden group"
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  >
-                    {/* Inner stud effect */}
-                    <div className="absolute inset-2 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors duration-200" />
-                    
-                    {/* Selection indicator */}
-                    <motion.div
-                      className="absolute inset-0 border-4 border-blue-500 rounded-xl opacity-0 group-hover:opacity-100"
-                      transition={{ duration: 0.2 }}
-                    />
-                  </motion.button>
-                ))}
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-500">
-                  Click a color to select
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCloseColorPicker}
-                  className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </motion.div>
+        <div>
+          <div
+            className="mosaic-grid"
+            style={{
+              gridTemplateColumns: `repeat(${mosaicWidth}, 1fr)`,
+              gridTemplateRows: `repeat(${mosaicHeight}, 1fr)`,
+              width: 'fit-content',
+            }}
+          >
+            {pixels.map((pixel, index) => (
+              <motion.div
+                key={index}
+                initial={{ scale: 0, rotate: 90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  delay: (pixel.x + pixel.y) * 0.002,
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 20,
+                }}
+                className={`lego-stud stud ${onPixelEdit ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
+                style={{
+                  width: `${studSize}px`,
+                  height: `${studSize}px`,
+                  backgroundColor: pixel.color.hex,
+                }}
+                title={`${pixel.color.name} (${pixel.x}, ${pixel.y})${onPixelEdit ? ' - Click to edit' : ''}`}
+                onClick={() => handlePixelClick(pixel.x, pixel.y)}
+              />
+            ))}
           </div>
-        )}
-      </AnimatePresence>
-
-      <div className="mt-4 text-center">
-        <div className="text-sm">
-          {mosaicWidth}×{mosaicHeight} studs • {pieceCount} total pieces
         </div>
-        <div className="text-xs mt-1">
-          Hover over studs to see color details
+
+        <AnimatePresence>
+          {showColorPicker && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleCloseColorPicker}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-gray-100" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 448 }}>
+                <h4 className="text-center mb-2 text-lg font-semibold">Choose LEGO Color</h4>
+                <div className="text-center mb-4">Position ({selectedPixel?.x}, {selectedPixel?.y})</div>
+
+                <div className="h-8 mb-4 flex items-center justify-center">
+                  <AnimatePresence>
+                    {hoveredColor && (
+                      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="bg-default-900 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                        {hoveredColor.name}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                      <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(72px, 1fr))' }}>
+                        {LEGO_COLORS.map((color) => (
+                          <motion.button key={color.id} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.98 }} onClick={() => handleColorSelect(color)} onMouseEnter={() => setHoveredColor(color)} onMouseLeave={() => setHoveredColor(null)} className="rounded-lg relative overflow-hidden" style={{ width: '72px', height: '72px', backgroundColor: color.hex, border: '2px solid rgba(0,0,0,0.06)', margin: '0 auto' }} title={color.name}>
+                            <div className="absolute" style={{ inset: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+                          </motion.button>
+                        ))}
+                      </div>
+
+                <div className="flex justify-end gap-3">
+                  <button onClick={handleCloseColorPicker} className="px-4 py-2 rounded bg-gray-500 text-white">Cancel</button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <div className="mt-3 text-center">
+          <div className="text-sm">{mosaicWidth}×{mosaicHeight} studs • {pieceCount} total pieces</div>
+          <div className="text-xs mt-1">Hover over studs to see color details</div>
         </div>
       </div>
     </motion.div>

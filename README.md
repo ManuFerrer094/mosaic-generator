@@ -51,6 +51,10 @@ npm run dev
 
 - **Framework**: Next.js 15 with App Router
 - **Styling**: Tailwind CSS with custom LEGO-inspired design system
+
+### UI Library
+
+This branch updates the UI to use `@nextui-org/react` components (Cards, Buttons, Grid) for a cleaner, accessible look while keeping the existing logic and animations. After installing dependencies, run the app normally with `npm run dev`.
 - **Animations**: Framer Motion for smooth, delightful interactions
 - **TypeScript**: Full type safety and enhanced developer experience
 - **Image Processing**: HTML5 Canvas for pixel-level image manipulation

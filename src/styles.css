@@ -1,30 +1,89 @@
 /* styles.css: estilos base y de componentes para reemplazar Tailwind */
 
+:root {
+  --bg-gradient-start: #e0e7ff;
+  --bg-gradient-end: #ede9fe;
+}
+
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   margin: 0;
   padding: 0;
 }
 
-.glass-card {
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.15);
-  padding: 1.5rem;
+/* New design tokens: grayscale palette with yellow accent */
+:root {
+  --gray-900: #0f172a;
+  --gray-800: #111827;
+  --gray-700: #374151;
+  --gray-600: #4b5563;
+  --gray-500: #6b7280;
+  --gray-300: #d1d5db;
+  --card-bg: rgba(255,255,255,0.04);
+  --glass-bg: rgba(255,255,255,0.06);
+  --muted: #6b7280;
+  --lego-red: #d40f12; /* LEGO red */
+  --lego-yellow: #ffde00; /* LEGO yellow */
+  --lego-dark: #8b0000;
 }
+
+/* Layout container */
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+
+/* Glass card: translucent panels used across the UI */
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 1rem;
+  color: var(--gray-800);
+}
+
+/* Elevated card for contrast */
+.card-elevated {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 30px rgba(2,6,23,0.06);
+}
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.6rem 1rem; border-radius:10px; font-weight:700; border:none; cursor:pointer; }
+.btn-lego {
+  background: linear-gradient(90deg, var(--lego-red), var(--lego-dark));
+  color: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.06s ease;
+}
+.btn-lego:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+.btn-lego:active{ transform: translateY(0); box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
+.btn-ghost { background: transparent; border: 1px solid rgba(0,0,0,0.06); color: var(--gray-800); }
+
+/* Typography helpers */
+.hero-title { font-size: 2.25rem; font-weight:800; color: var(--lego-red); letter-spacing: 0.5px; }
+.muted { color: var(--muted); }
+
+/* Upload area */
+.upload-area { display:flex; gap:1rem; align-items:center; justify-content:center; padding:1.25rem; border-radius:12px; border:1px dashed rgba(0,0,0,0.06); background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01)); }
+
+/* Mosaic grid tweaks */
+.mosaic-grid { display:grid; gap:2px; background: rgba(0,0,0,0.45); padding:0.4rem; border-radius:8px; }
+
+/* Utility */
+.text-center { text-align:center; }
+.mb-4 { margin-bottom:1rem; }
+.mt-4 { margin-top:1rem; }
+
 
 .lego-stud {
   aspect-ratio: 1/1;
   border-radius: 0.25rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  transition: transform 0.15s;
   position: relative;
-  border: 1px solid rgba(0,0,0,0.1);
-  /* Usar directamente el color de fondo sin gradiente complejo */
+  border: 1px solid rgba(0,0,0,0.08);
 }
 .lego-stud:hover {
   transform: scale(1.05);
@@ -60,10 +119,9 @@ body {
 .mosaic-grid {
   display: grid;
   gap: 1px;
-  background: #1f2937;
-  padding: 0.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  background: #111827;
+  padding: 0.35rem;
+  border-radius: 0.5rem;
   width: fit-content;
   margin: 0 auto;
 }

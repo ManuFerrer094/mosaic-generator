@@ -13,80 +13,39 @@ interface SizeSelectorProps {
 export default function SizeSelector({ selectedSize, onSizeChange, disabled }: SizeSelectorProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      transition={{ duration: 0.45, delay: 0.15 }}
       className="w-full"
     >
-      <div className="glass-card p-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center">
-          Choose Mosaic Size
-        </h3>
-        
+      <div className="card p-4">
+        <div className="text-center mb-4">
+          <h3 className="text-lg font-semibold">Choose Mosaic Size</h3>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {MOSAIC_SIZES.map((size, index) => (
-            <motion.button
-              key={size.value}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={!disabled ? { scale: 1.05, y: -2 } : {}}
-              whileTap={!disabled ? { scale: 0.95 } : {}}
-              onClick={() => !disabled && onSizeChange(size.value)}
-              disabled={disabled}
-              className={`
-                relative p-6 rounded-2xl border-3 transition-all duration-300 group overflow-hidden
-                ${selectedSize === size.value
-                  ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-pink-100 shadow-xl transform scale-105'
-                  : 'border-gray-200 bg-white hover:border-purple-400 hover:shadow-lg hover:-translate-y-1'
-                }
-                ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              `}
-            >
-              {selectedSize === size.value && (
-                <motion.div
-                  layoutId="size-selector"
-                  className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl"
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-              )}
-              
-              <div className="relative z-10">
-                <div className="text-2xl font-bold text-gray-700 mb-1">
-                  {size.label}
-                </div>
-                <div className="text-sm text-gray-500 mb-2">
-                  {size.description}
-                </div>
-                
-                {/* Visual representation */}
-                <div className="flex justify-center mb-2">
-                  <div 
-                    className="grid gap-px bg-gray-300 p-1 rounded"
-                    style={{
-                      gridTemplateColumns: `repeat(${Math.min(size.value / 4, 8)}, 1fr)`,
-                    }}
-                  >
-                    {Array.from({ length: Math.min(size.value / 4, 8) ** 2 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 bg-gradient-to-br from-blue-400 to-purple-400 rounded-sm"
-                      />
-                    ))}
+          {MOSAIC_SIZES.map((size, index) => {
+            const selected = selectedSize === size.value
+            return (
+              <motion.button key={size.value} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.06 }} onClick={() => !disabled && onSizeChange(size.value)} disabled={disabled} className={`p-4 rounded-lg text-left ${selected ? 'border-2 border-yellow-500 bg-opacity-10' : 'border border-transparent hover:border-gray-300'}`}>
+                <div className="flex flex-col items-start gap-1 w-full">
+                  <div className="text-semibold" style={{ fontWeight: 700, color: 'var(--gray-100)' }}>{size.label}</div>
+                  <div className="muted">{size.description}</div>
+                  <div className="mt-3 w-full flex justify-center">
+                    <div className="grid gap-px bg-gray-200 p-1 rounded" style={{ gridTemplateColumns: `repeat(${Math.min(size.value / 4, 8)}, 1fr)`, width: '80%' }}>
+                      {Array.from({ length: Math.min(size.value / 4, 8) ** 2 }).map((_, i) => (
+                        <div key={i} className="w-2 h-2 bg-gray-500 rounded-sm" />
+                      ))}
+                    </div>
                   </div>
+                  <div className="text-xs muted mt-2">{(size.value ** 2).toLocaleString()} pieces</div>
                 </div>
-                
-                <div className="text-xs text-gray-400">
-                  {(size.value ** 2).toLocaleString()} pieces
-                </div>
-              </div>
-            </motion.button>
-          ))}
+              </motion.button>
+            )
+          })}
         </div>
-        
-        <div className="mt-4 text-center text-sm text-gray-500">
-          Larger sizes create more detailed mosaics but require more pieces
-        </div>
+
+        <div className="mt-4 text-center text-sm muted">Larger sizes create more detailed mosaics but require more pieces</div>
       </div>
     </motion.div>
   )

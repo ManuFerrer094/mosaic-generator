@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { Upload, Image as ImageIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -10,6 +10,7 @@ interface ImageUploadProps {
 }
 
 export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type.startsWith('image/')) {
@@ -30,90 +31,30 @@ export default function ImageUpload({ onImageSelect, disabled }: ImageUploadProp
   }, [])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full"
-    >
-      <div
-        className={`
-          relative border-2 border-dashed rounded-2xl p-8 text-center 
-          transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg
-          ${!disabled 
-            ? 'border-blue-300 hover:border-blue-400 hover:bg-white/90 cursor-pointer hover:shadow-xl' 
-            : 'border-gray-300 opacity-60'
-          }
-        `}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-      >
-        <motion.div
-          whileHover={!disabled ? { scale: 1.02 } : {}}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className={`
-              mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-6
-              ${!disabled ? 'bg-blue-100' : 'bg-gray-100'}
-            `}
-          >
-            <ImageIcon className={`h-10 w-10 ${!disabled ? 'text-blue-500' : 'text-gray-400'}`} />
-          </motion.div>
-          
-          <h3 className={`text-2xl font-bold mb-3 ${!disabled ? 'text-gray-800' : 'text-gray-500'}`}>
-            Upload Your Image
-          </h3>
-          <p className={`text-base mb-8 ${!disabled ? 'text-gray-600' : 'text-gray-400'}`}>
-            Drag and drop an image here, or click the button below
-          </p>
-          
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={disabled}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-          />
-          
-          <motion.button
-            whileHover={!disabled ? { scale: 1.05, y: -2 } : {}}
-            whileTap={!disabled ? { scale: 0.95 } : {}}
-            className={`
-              inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg
-              transition-all duration-300 shadow-xl border-2 relative overflow-hidden
-              ${!disabled 
-                ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white border-transparent hover:shadow-2xl transform hover:-translate-y-1'
-                : 'bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed'
-              }
-            `}
-            disabled={disabled}
-          >
-            {/* Animated background effect */}
-            {!disabled && (
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover:opacity-100"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-            )}
-            
-            <motion.div
-              className="relative z-10 flex items-center gap-3"
-              whileHover={!disabled ? { scale: 1.05 } : {}}
-            >
-              <Upload className="w-6 h-6" />
-              Choose Image
-            </motion.div>
-          </motion.button>
-        </motion.div>
-        
-        <div className={`mt-8 text-sm ${!disabled ? 'text-gray-500' : 'text-gray-400'}`}>
-          Supported formats: JPG, PNG, GIF, WebP
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="w-full">
+      <div className="card card-elevated upload-area" onDrop={handleDrop} onDragOver={handleDragOver}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}>
+            <ImageIcon className={`h-8 w-8 text-white`} />
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <div className="text-lg font-semibold" style={{ color: 'var(--lego-red)' }}>Upload Your Image</div>
+            <div className="muted">Drag & drop here or click the button</div>
+            <div className="mt-4">
+              <input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} disabled={disabled} style={{ display: 'none' }} />
+              <button
+                className="btn btn-lego"
+                disabled={disabled}
+                onClick={() => {
+                  inputRef.current?.click()
+                }}
+              >
+                <Upload /> Choose Image
+              </button>
+            </div>
+            <div className="mt-2 muted" style={{ fontSize: 12 }}>Supported formats: JPG, PNG, GIF, WebP</div>
+          </div>
         </div>
       </div>
     </motion.div>
